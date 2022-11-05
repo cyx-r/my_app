@@ -70,11 +70,12 @@ class Card extends StatelessWidget {
     return SizedBox(width: 150,height: 150,
     child:GridTile(child: GestureDetector(
       child: Container(
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
       color: Color((math.Random().nextDouble() * 0xFFFFFF).toInt()).withOpacity(1.0),
       width: 150,
       height: 150,
       padding: EdgeInsets.all(16),
-      child:Center(child:Text(value)),), 
+      child:Center(child:Text(value,style: TextStyle(color: Color.fromARGB(255, 3, 58, 95)),)),), 
       onTap: (){Navigator.of(context).push(MaterialPageRoute(
         builder: ((context) => MyNoteTile(Note(value,"") ))));})
   ),);
