@@ -75,24 +75,42 @@ class Card extends StatelessWidget {
       height: 150,
       padding: EdgeInsets.all(16),
       child:Center(child:Text(value)),), 
-      onTap: (){Navigator.push(context, MaterialPageRoute(builder: ((context) => Note(text: value))));},)
+      onTap: (){Navigator.of(context).push(MaterialPageRoute(
+        builder: ((context) => MyNoteTile(Note(value,"") ))));})
   ),);
   }
 }
 
 
+class Note{ 
+  String title;
+  String content;
 
-class Note extends StatelessWidget {
-  final String text;
-  const Note({super.key, required this.text});
 
+  Note( this.title, this.content,);
+
+}
+
+class MyNoteTile extends StatefulWidget {
+  Note note;
+  MyNoteTile( this.note, {super.key});
+
+  @override
+  State<MyNoteTile> createState() => _MyNoteTileState();
+}
+
+class _MyNoteTileState extends State<MyNoteTile> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
-      body: Center(
-        child: Text(text)
-      )
+      appBar: AppBar(title:Center(child: Text(widget.note.title),)),
+      body: Column(children: [
+      Text(widget.note.title,style: TextStyle(fontWeight: FontWeight.bold)),
+      TextField(onSubmitted: (value) {
+        setState(() {widget.note.content += value;});
+      },),
+      Text(widget.note.content)
+    ]),
     );
   }
 }
