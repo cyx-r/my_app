@@ -1,4 +1,10 @@
+// ignore_for_file: prefer_typing_uninitialized_variables, prefer_const_constructors, camel_case_types, must_be_immutable
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
+import 'dart:io';
+import 'dart:math' as math;
 
 void main() {
   runApp(const MyApp());
@@ -12,13 +18,13 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-       
         primarySwatch: Colors.blue,
       ),
       home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
 }
+
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
@@ -29,48 +35,64 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
+
 class _MyHomePageState extends State<MyHomePage> {
-  var _colorSwitch = false;
-  final _color = Colors.greenAccent;
-  int w = 0 ,h = 0;
+  int buffer = 0;
+  Map<int,Widget>drawerData = {};
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: 
-        Stack( children: <Widget>[
-          Positioned(left: 0,child: Container(width: 100,height: 1080, color:_colorSwitch? Colors.green : Colors.red,)),
-          Positioned(left: 0,child: TextButton(child:  const Text('press me'), onPressed: (){setState(() {
-            _colorSwitch = !_colorSwitch;
-          });},)), //Левая часть экрана  
-          Positioned(right: 20,child: Draggable<Color>(
-              feedback: Container(width: 100,height: 100,color: Colors.white,),
-              childWhenDragging: Container(width: 100,height: 100,color: Colors.black,),
-              child: Container(width: 100,height: 100,color: Colors.green,))),
-          Positioned( left: 200,child: DragTarget<Color>(
-             builder: (context,_,__)=>Container(width: 100,height: 100,color: Colors.black,),
-             onAccept: ((data) => setState(()=> _color)),
-             ))
-    ],), 
+      appBar: AppBar(title: Text(widget.title)),
+      floatingActionButton: FloatingActionButton(onPressed:
+           (){ showDialog(context: context,
+              builder: (_)=>AlertDialog(
+                title: const Text("enter name of the file"),
+                content: TextField(
+                  onSubmitted:(value) => setState(() { 
+                    buffer++;
+                    drawerData.addAll( { buffer:Card(value: value) } );
+                    Navigator.pop(context);
+                  })
+               ),
+              ));},
+            child: const Icon(Icons.add),),
+      body: GridView.count(crossAxisSpacing: 10,mainAxisSpacing: 10,crossAxisCount: 5,children:drawerData.values.toList(),)
     );
   }
 }
 
-
-class Card extends StatefulWidget {
-  
-  const Card({super.key});
+class Card extends StatelessWidget {
+  final String value;
+  const Card({super.key, required this.value});
 
   @override
-  State<Card> createState() => _CardState();
+  Widget build(BuildContext context) {
+    return SizedBox(width: 150,height: 150,
+    child:GridTile(child: GestureDetector(
+      child: Container(
+      color: Color((math.Random().nextDouble() * 0xFFFFFF).toInt()).withOpacity(1.0),
+      width: 150,
+      height: 150,
+      padding: EdgeInsets.all(16),
+      child:Center(child:Text(value)),), 
+      onTap: (){Navigator.push(context, MaterialPageRoute(builder: ((context) => Note(text: value))));},)
+  ),);
+  }
 }
 
 
-class _CardState extends State<Card> {
+
+class Note extends StatelessWidget {
+  final String text;
+  const Note({super.key, required this.text});
+
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Scaffold(
+      appBar: AppBar(),
+      body: Center(
+        child: Text(text)
+      )
+    );
   }
 }
